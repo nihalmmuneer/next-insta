@@ -3,12 +3,64 @@ import Image from "next/image";
 import Link from "next/link";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { IoAddCircleOutline, IoCamera, IoClose } from "react-icons/io5";
-import { useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Modal from "react-modal";
+import { app } from "@/firebase";
+import {
+  getStorage,
+  uploadBytesResumable,
+  ref,
+  getDownloadURL,
+} from "firebase/storage";
 
 const Header = () => {
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
+  const [selectImage, setSelectImage] = useState();
+  const [imageUploading, setImageUploading] = useState(false);
+  const [selectImageUrl, setSelectImageUrl] = useState();
+  const fileImagePicker = useRef();
+
+  const handleFileImage = (e) => {
+    const file = e.target.files[0];
+    console.log(file, "file");
+    if (file) {
+      setSelectImage(file);
+      setSelectImageUrl(URL.createObjectURL(file));
+    }
+  };
+
+  useEffect(() => {
+    setImageUploading(true);
+    const handleImageStorage = async () => {
+      const storage = getStorage(app);
+      const fileName = new Date().getTime() + "-" + selectImage.name;
+      const storageRef = ref(storage, fileName);
+      const uploadTask = uploadBytesResumable(storageRef, selectImage);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log(`uploading ${progress}%`);
+        },
+        (error) => {
+          console.log(error.message);
+          setSelectImage(null);
+          setSelectImageUrl(null);
+          setImageUploading(false);
+        },
+        () =>
+          getDownloadURL(uploadTask.snapshot.ref).then((getDownloadURL) => {
+            setSelectImageUrl(getDownloadURL);
+            setImageUploading(false);
+          })
+      );
+    };
+    if (selectImage) {
+      handleImageStorage();
+    }
+  }, [selectImage]);
 
   return (
     <div className=" border-b p-3 shadow-sm">
@@ -62,22 +114,43 @@ const Header = () => {
       </div>
       <Modal
         isOpen={isOpen}
-        className="w-[90%] mx-auto outine-none absolute top-56 left-[50%] p-6  translate-x-[-50%] max-w-lg rounded-md shadow-lg"
+        className="w-[90%] mx-auto outine-none absolute top-40 left-[50%] p-6  translate-x-[-50%] max-w-lg rounded-md shadow-lg"
         onRequestClose={() => setIsOpen(false)}
-        // ariaHideApp={false}
+        ariaHideApp={false}
       >
         <div className="flex flex-col justify-center  items-center">
-          <IoCamera className="text-5xl text-center justify-center text-slate-400" />
+          {selectImage ? (
+            <img
+              src={selectImageUrl}
+              alt="select-image"
+              className={`w-full h-[200px] cursor-pointer ${
+                imageUploading ? "animate-pulse" : ""
+              }`}
+              onClick={() => setSelectImage(null)}
+            />
+          ) : (
+            <IoCamera
+              className="text-5xl text-center justify-center cursor-pointer text-slate-400"
+              onClick={() => fileImagePicker.current.click()}
+            />
+          )}
+          <input
+            type="file"
+            accept="image/*"
+            hidden
+            ref={fileImagePicker}
+            onChange={handleFileImage}
+          />
           <input
             type="text"
             placeholder="Please enter your caption..."
-            className="p-2 focus:outline-none"
+            className="p-2 focus:outline-none text-center"
           />
           <button className="disabled:bg-gray-100 disabled:cursor-not-allowed cursor-pointer bg-red-700 hover:bg-red-500 font-semibold w-full p-2 rounded-lg text-white uppercase mt-2">
             Upload Post
           </button>
           <IoClose
-            className="absolute top-2 right-2 text-xl cursor-pointer hover:text-red-500 trasition duration-300"
+            className="absolute top-1 right-1 text-xl cursor-pointer hover:text-red-500 trasition duration-300"
             onClick={() => setIsOpen(false)}
           />
         </div>
