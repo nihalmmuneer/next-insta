@@ -12,9 +12,18 @@ import {
   ref,
   getDownloadURL,
 } from "firebase/storage";
+import {
+  addDoc,
+  collection,
+  getFirestore,
+  serverTimestamp,
+} from "firebase/firestore";
 
 const Header = () => {
   const { data: session } = useSession();
+  const [caption, setCaption] = useState("");
+  const db = getFirestore(app);
+  console.log(session, "session");
   const [isOpen, setIsOpen] = useState(false);
   const [selectImage, setSelectImage] = useState();
   const [imageUploading, setImageUploading] = useState(false);
@@ -61,6 +70,17 @@ const Header = () => {
       handleImageStorage();
     }
   }, [selectImage]);
+
+  const handleSubmit = async () => {
+    const docRef = await addDoc(collection(db, "posts"), {
+      username: session.user.username,
+      caption,
+      profileImg: session.user.image,
+      uploadImg: selectImageUrl,
+      timestamps: serverTimestamp(),
+    });
+    setIsOpen(false);
+  };
 
   return (
     <div className=" border-b p-3 shadow-sm">
@@ -145,8 +165,14 @@ const Header = () => {
             type="text"
             placeholder="Please enter your caption..."
             className="p-2 focus:outline-none text-center"
+            maxLength={25}
+            onChange={(e) => setCaption(e.target.value)}
           />
-          <button className="disabled:bg-gray-100 disabled:cursor-not-allowed cursor-pointer bg-red-700 hover:bg-red-500 font-semibold w-full p-2 rounded-lg text-white uppercase mt-2">
+          <button
+            onClick={handleSubmit}
+            disabled={caption.trim() === "" || imageUploading}
+            className="disabled:bg-gray-100 disabled:cursor-not-allowed cursor-pointer bg-red-700 hover:bg-red-500 font-semibold w-full p-2 rounded-lg text-white uppercase mt-2"
+          >
             Upload Post
           </button>
           <IoClose
