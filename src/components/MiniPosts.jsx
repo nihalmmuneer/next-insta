@@ -4,8 +4,8 @@ import { signIn, signOut, useSession } from "next-auth/react";
 const MiniPosts = () => {
   const { data: session } = useSession();
   return (
-    <div className="flex items-center mt-16 justify-between w-[280px]">
-      <div className="flex gap-2 items-center justify-center">
+    <div className="flex items-center mt-16 justify-between w-[280px] fixed ml-3">
+      <div className="flex gap-3 items-center justify-center">
         <img
           src={session?.user?.image || "insta-logo.webp"}
           alt="profileImg"

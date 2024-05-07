@@ -73,9 +73,9 @@ const Header = () => {
 
   const handleSubmit = async () => {
     const docRef = await addDoc(collection(db, "posts"), {
-      username: session.user.username,
+      username: session?.user?.username,
       caption,
-      profileImg: session.user.image,
+      profileImg: session?.user?.image,
       uploadImg: selectImageUrl,
       timestamps: serverTimestamp(),
     });
@@ -83,7 +83,7 @@ const Header = () => {
   };
 
   return (
-    <div className=" border-b p-3 shadow-sm">
+    <div className=" border-b p-3 shadow-sm sticky top-0 bg-white">
       <div className="flex justify-between items-center  max-w-6xl mx-auto">
         {/* logo */}
         <Link href="/" className="hidden sm:inline">
