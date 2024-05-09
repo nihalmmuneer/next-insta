@@ -84,7 +84,7 @@ const Header = () => {
 
   return (
     <div className=" border-b p-3 shadow-sm sticky top-0 bg-white">
-      <div className="flex justify-between items-center  max-w-6xl mx-auto">
+      <div className="flex justify-between items-center  max-w-6xl mx-auto ">
         {/* logo */}
         <Link href="/" className="hidden sm:inline">
           <Image
@@ -134,9 +134,10 @@ const Header = () => {
       </div>
       <Modal
         isOpen={isOpen}
-        className="w-[90%] mx-auto outine-none absolute top-40 left-[50%] p-6  translate-x-[-50%] max-w-lg rounded-md shadow-lg"
+        className="w-[90%] mx-auto outine-none absolute top-40 left-[50%] p-6 bg-white translate-x-[-50%] max-w-lg rounded-md shadow-lg"
         onRequestClose={() => setIsOpen(false)}
         ariaHideApp={false}
+
       >
         <div className="flex flex-col justify-center  items-center">
           {selectImage ? (

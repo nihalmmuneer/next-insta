@@ -24,7 +24,7 @@ const LikeSection = ({ id }) => {
   }, [db]);
 
   useEffect(() => {
-    if (likes.findIndex((like) => like.id === session.user.uid) !== -1) {
+    if (likes.findIndex((like) => like?.id === session?.user?.uid) !== -1) {
       setHasLikes(true);
     } else {
       setHasLikes(false);
@@ -57,7 +57,7 @@ const LikeSection = ({ id }) => {
           )}
           {likes.length > 0 && (
             <p>
-              {likes.length} {likes.length === 1 ? "like" : "likes"}
+              {likes?.length} {likes?.length === 1 ? "like" : "likes"}
             </p>
           )}
         </div>

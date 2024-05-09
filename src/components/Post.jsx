@@ -1,5 +1,6 @@
 import { BsThreeDotsVertical } from "react-icons/bs";
 import LikeSection from "./LikeSection";
+import CommentSection from "./CommentSection";
 const Post = ({ post }) => {
   console.log(post, "post");
   return (
@@ -14,12 +15,13 @@ const Post = ({ post }) => {
         <BsThreeDotsVertical />
       </div>
       <img src={post?.uploadImg} alt={post?.caption} className="object-cover" />
-      
+
       <LikeSection id={post.id} />
       <div className="flex gap-2 p-5">
         <span className="text-sm font-bold">{post?.username}</span>
         <p className="text-sm">{post?.caption}</p>
       </div>
+      <CommentSection id={post.id} />
     </div>
   );
 };
